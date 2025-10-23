@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sapling.Jo - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #2e8b57;
+            --secondary-green: #3cb371;
+            --light-green: #90ee90;
+            --dark-green: #006400;
+            --light-bg: #f9f9f9;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --error: #e74c3c;
+            --success: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            color: var(--primary-green);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        nav a:hover {
+            color: var(--primary-green);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-green);
+            transition: width 0.3s;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .admin-indicator {
+            background: var(--primary-green);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        /* Login Form */
+        .login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 40px 0;
+        }
+        
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-green);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-green);
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--text-dark);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .error {
+            background-color: #ffeaea;
+            color: var(--error);
+            border: 1px solid #ffcccc;
+        }
+        
+        .success {
+            background-color: #eaffea;
+            color: var(--success);
+            border: 1px solid #ccffcc;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            padding: 40px 0;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary-green);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .activity-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .activity-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .activity-content {
+            padding: 20px;
+        }
+        
+        .activity-content h3 {
+            margin-bottom: 10px;
+            color: var(--dark-green);
+        }
+        
+        .activity-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .activity-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            width: auto;
+        }
+        
+        .btn-danger {
+            background-color: var(--error);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        /* Public Activities Section */
+        .public-activities {
+            padding: 80px 0;
+            background-color: var(--light-bg);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-green);
+            font-size: 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 50px 0 20px;
+            text-align: center;
+        }
+        
+        .copyright {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-img">S</div>
+                    <h1>Sapling <span style="color: var(--dark-green);">(غرس)</span></h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#public-activities">Our Activities</a></li>
+                        <li><a id="admin-login-link" href="#admin">Admin Login</a></li>
+                        <li id="admin-nav" style="display: none;">
+                            <a href="#admin-panel">Admin Panel <span class="admin-indicator">Admin</span></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Public Activities Section -->
+    <section id="public-activities" class="public-activities">
+        <div class="container">
+            <h2 class="section-title">Our Activities</h2>
+            <div id="public-activities-container" class="activities-grid">
+                <!-- Public activities will be loaded here -->
+                <div class="no-activities">
+                    <p>No activities posted yet. Check back soon!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section id="login-section" class="login-section">
+        <div class="container">
+            <div class="login-form">
+                <h2>Admin Login</h2>
+                <div id="login-message" class="message" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+                <button id="login-btn" class="btn">Login</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section id="admin-panel" class="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <h2>Admin Panel</h2>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+            
+            <div class="admin-tabs">
+                <div class="tab active" data-tab="post-activity">Post New Activity</div>
+                <div class="tab" data-tab="manage-activities">Manage Activities</div>
+            </div>
+            
+            <!-- Post Activity Tab -->
+            <div id="post-activity" class="tab-content active">
+                <h3>Post New Activity</h3>
+                <div id="activity-message" class="message" style="display: none;"></div>
+                <form id="activity-form">
+                    <div class="form-group">
+                        <label for="activity-title">Activity Title</label>
+                        <input type="text" id="activity-title" placeholder="Enter activity title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-description">Description</label>
+                        <textarea id="activity-description" placeholder="Enter activity description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-date">Date</label>
+                        <input type="date" id="activity-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-location">Location</label>
+                        <input type="text" id="activity-location" placeholder="Enter activity location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="activity-image">Image URL</label>
+                        <input type="text" id="activity-image" placeholder="Enter image URL">
+                    </div>
+                    <button type="submit" class="btn">Post Activity</button>
+                </form>
+            </div>
+            
+            <!-- Manage Activities Tab -->
+            <div id="manage-activities" class="tab-content">
+                <h3>Manage Activities</h3>
+                <div id="manage-activities-container" class="activities-grid">
+                    <!-- Activities will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Edit Activity Modal -->
+    <div id="edit-activity-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Activity</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="edit-activity-form">
+                <input type="hidden" id="edit-activity-id">
+                <div class="form-group">
+                    <label for="edit-activity-title">Activity Title</label>
+                    <input type="text" id="edit-activity-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-activity-description">Description</label>
+                    <textarea id="edit-activity-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-activity-date">Date</label>
+                    <input type="date" id="edit-activity-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-activity-location">Location</label>
+                    <input type="text" id="edit-activity-location" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-activity-image">Image URL</label>
+                    <input type="text" id="edit-activity-image">
+                </div>
+                <button type="submit" class="btn">Update Activity</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>© 2025 Sapling (غرس). All rights reserved. Founded by Omar Yaseen.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Demo admin credentials (in a real app, this would be handled server-side)
+        const ADMIN_CREDENTIALS = {
+            username: "admin",
+            password: "sapling2025"
+        };
+
+        // Activities data (stored in localStorage for demo purposes)
+        let activities = JSON.parse(localStorage.getItem('sapling-activities')) || [];
+
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminNav = document.getElementById('admin-nav');
+        const adminLoginLink = document.getElementById('admin-login-link');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginMessage = document.getElementById('login-message');
+        const activityForm = document.getElementById('activity-form');
+        const activityMessage = document.getElementById('activity-message');
+        const publicActivitiesContainer = document.getElementById('public-activities-container');
+        const manageActivitiesContainer = document.getElementById('manage-activities-container');
+        const editActivityModal = document.getElementById('edit-activity-modal');
+        const editActivityForm = document.getElementById('edit-activity-form');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Check if user is already logged in
+        if (localStorage.getItem('sapling-admin-loggedin') === 'true') {
+            showAdminPanel();
+        }
+
+        // Event Listeners
+        loginBtn.addEventListener('click', handleLogin);
+        logoutBtn.addEventListener('click', handleLogout);
+        activityForm.addEventListener('submit', handleActivitySubmit);
+        editActivityForm.addEventListener('submit', handleEditActivitySubmit);
+        closeModalBtn.addEventListener('click', closeEditModal);
+        adminLoginLink.addEventListener('click', showLoginSection);
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    }
+                });
+                
+                // If manage activities tab is active, load activities
+                if (tabId === 'manage-activities') {
+                    loadManageActivities();
+                }
+            });
+        });
+
+        // Functions
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                // Successful login
+                localStorage.setItem('sapling-admin-loggedin', 'true');
+                showAdminPanel();
+                showMessage(loginMessage, 'Login successful!', 'success');
+            } else {
+                // Failed login
+                showMessage(loginMessage, 'Invalid username or password', 'error');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('sapling-admin-loggedin');
+            hideAdminPanel();
+            showLoginSection();
+        }
+
+        function showAdminPanel() {
+            loginSection.style.display = 'none';
+            adminPanel.style.display = 'block';
+            adminNav.style.display = 'block';
+            loadPublicActivities();
+            loadManageActivities();
+        }
+
+        function hideAdminPanel() {
+            adminPanel.style.display = 'none';
+            adminNav.style.display = 'none';
+        }
+
+        function showLoginSection() {
+            loginSection.style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            loginMessage.style.display = 'none';
+        }
+
+        function handleActivitySubmit(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('activity-title').value;
+            const description = document.getElementById('activity-description').value;
+            const date = document.getElementById('activity-date').value;
+            const location = document.getElementById('activity-location').value;
+            const image = document.getElementById('activity-image').value || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1474&q=80';
+            
+            const newActivity = {
+                id: Date.now().toString(),
+                title,
+                description,
+                date,
+                location,
+                image,
+                createdAt: new Date().toISOString()
+            };
+            
+            activities.push(newActivity);
+            saveActivities();
+            
+            showMessage(activityMessage, 'Activity posted successfully!', 'success');
+            activityForm.reset();
+            
+            // Reload activities in both public and admin views
+            loadPublicActivities();
+            loadManageActivities();
+        }
+
+        function handleEditActivitySubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('edit-activity-id').value;
+            const title = document.getElementById('edit-activity-title').value;
+            const description = document.getElementById('edit-activity-description').value;
+            const date = document.getElementById('edit-activity-date').value;
+            const location = document.getElementById('edit-activity-location').value;
+            const image = document.getElementById('edit-activity-image').value;
+            
+            const activityIndex = activities.findIndex(activity => activity.id === id);
+            
+            if (activityIndex !== -1) {
+                activities[activityIndex] = {
+                    ...activities[activityIndex],
+                    title,
+                    description,
+                    date,
+                    location,
+                    image: image || activities[activityIndex].image
+                };
+                
+                saveActivities();
+                closeEditModal();
+                loadPublicActivities();
+                loadManageActivities();
+            }
+        }
+
+        function loadPublicActivities() {
+            publicActivitiesContainer.innerHTML = '';
+            
+            if (activities.length === 0) {
+                publicActivitiesContainer.innerHTML = '<div class="no-activities"><p>No activities posted yet. Check back soon!</p></div>';
+                return;
+            }
+            
+            // Sort activities by date (newest first)
+            const sortedActivities = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedActivities.forEach(activity => {
+                const activityCard = createActivityCard(activity, false);
+                publicActivitiesContainer.appendChild(activityCard);
+            });
+        }
+
+        function loadManageActivities() {
+            manageActivitiesContainer.innerHTML = '';
+            
+            if (activities.length === 0) {
+                manageActivitiesContainer.innerHTML = '<div class="no-activities"><p>No activities posted yet.</p></div>';
+                return;
+            }
+            
+            // Sort activities by date (newest first)
+            const sortedActivities = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedActivities.forEach(activity => {
+                const activityCard = createActivityCard(activity, true);
+                manageActivitiesContainer.appendChild(activityCard);
+            });
+        }
+
+        function createActivityCard(activity, isAdmin) {
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+            
+            const formattedDate = new Date(activity.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            card.innerHTML = `
+                <div class="activity-image">
+                    <img src="${activity.image}" alt="${activity.title}">
+                </div>
+                <div class="activity-content">
+                    <h3>${activity.title}</h3>
+                    <p>${activity.description}</p>
+                    <div class="activity-meta">
+                        <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${activity.location}</span>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="activity-actions">
+                        <button class="btn btn-small edit-activity" data-id="${activity.id}">Edit</button>
+                        <button class="btn btn-small btn-danger delete-activity" data-id="${activity.id}">Delete</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            if (isAdmin) {
+                const editBtn = card.querySelector('.edit-activity');
+                const deleteBtn = card.querySelector('.delete-activity');
+                
+                editBtn.addEventListener('click', () => openEditModal(activity));
+                deleteBtn.addEventListener('click', () => deleteActivity(activity.id));
+            }
+            
+            return card;
+        }
+
+        function openEditModal(activity) {
+            document.getElementById('edit-activity-id').value = activity.id;
+            document.getElementById('edit-activity-title').value = activity.title;
+            document.getElementById('edit-activity-description').value = activity.description;
+            document.getElementById('edit-activity-date').value = activity.date;
+            document.getElementById('edit-activity-location').value = activity.location;
+            document.getElementById('edit-activity-image').value = activity.image;
+            
+            editActivityModal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            editActivityModal.style.display = 'none';
+        }
+
+        function deleteActivity(id) {
+            if (confirm('Are you sure you want to delete this activity?')) {
+                activities = activities.filter(activity => activity.id !== id);
+                saveActivities();
+                loadPublicActivities();
+                loadManageActivities();
+            }
+        }
+
+        function saveActivities() {
+            localStorage.setItem('sapling-activities', JSON.stringify(activities));
+        }
+
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === editActivityModal) {
+                closeEditModal();
+            }
+        });
+
+        // Initial load of public activities
+        loadPublicActivities();
+    </script>
+</body>
+</html>
