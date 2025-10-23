@@ -316,6 +316,18 @@
             color: var(--text-light);
         }
         
+        .location-link {
+            color: var(--primary-green);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        .location-link:hover {
+            color: var(--dark-green);
+            text-decoration: underline;
+        }
+        
         .activity-actions {
             display: flex;
             gap: 10px;
@@ -517,6 +529,11 @@
                         <input type="text" id="activity-location" placeholder="Enter activity location" required>
                     </div>
                     <div class="form-group">
+                        <label for="activity-location-link">Location Link (Optional)</label>
+                        <input type="url" id="activity-location-link" placeholder="https://maps.google.com/...">
+                        <small style="color: var(--text-light);">Add a Google Maps link or any URL for the location</small>
+                    </div>
+                    <div class="form-group">
                         <label for="activity-image">Image URL</label>
                         <input type="text" id="activity-image" placeholder="Enter image URL">
                     </div>
@@ -558,6 +575,11 @@
                 <div class="form-group">
                     <label for="edit-activity-location">Location</label>
                     <input type="text" id="edit-activity-location" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-activity-location-link">Location Link (Optional)</label>
+                    <input type="url" id="edit-activity-location-link" placeholder="https://maps.google.com/...">
+                    <small style="color: var(--text-light);">Add a Google Maps link or any URL for the location</small>
                 </div>
                 <div class="form-group">
                     <label for="edit-activity-image">Image URL</label>
@@ -691,6 +713,7 @@
             const description = document.getElementById('activity-description').value;
             const date = document.getElementById('activity-date').value;
             const location = document.getElementById('activity-location').value;
+            const locationLink = document.getElementById('activity-location-link').value;
             const image = document.getElementById('activity-image').value || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1474&q=80';
             
             const newActivity = {
@@ -699,6 +722,7 @@
                 description,
                 date,
                 location,
+                locationLink: locationLink || null,
                 image,
                 createdAt: new Date().toISOString()
             };
@@ -722,6 +746,7 @@
             const description = document.getElementById('edit-activity-description').value;
             const date = document.getElementById('edit-activity-date').value;
             const location = document.getElementById('edit-activity-location').value;
+            const locationLink = document.getElementById('edit-activity-location-link').value;
             const image = document.getElementById('edit-activity-image').value;
             
             const activityIndex = activities.findIndex(activity => activity.id === id);
@@ -733,6 +758,7 @@
                     description,
                     date,
                     location,
+                    locationLink: locationLink || null,
                     image: image || activities[activityIndex].image
                 };
                 
@@ -787,6 +813,11 @@
                 day: 'numeric'
             });
             
+            // Create location element - either a link or plain text
+            const locationElement = activity.locationLink 
+                ? `<a href="${activity.locationLink}" target="_blank" class="location-link" title="View location on map"><i class="fas fa-map-marker-alt"></i> ${activity.location}</a>`
+                : `<span><i class="fas fa-map-marker-alt"></i> ${activity.location}</span>`;
+            
             card.innerHTML = `
                 <div class="activity-image">
                     <img src="${activity.image}" alt="${activity.title}">
@@ -796,7 +827,7 @@
                     <p>${activity.description}</p>
                     <div class="activity-meta">
                         <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
-                        <span><i class="fas fa-map-marker-alt"></i> ${activity.location}</span>
+                        ${locationElement}
                     </div>
                     ${isAdmin ? `
                     <div class="activity-actions">
@@ -824,6 +855,7 @@
             document.getElementById('edit-activity-description').value = activity.description;
             document.getElementById('edit-activity-date').value = activity.date;
             document.getElementById('edit-activity-location').value = activity.location;
+            document.getElementById('edit-activity-location-link').value = activity.locationLink || '';
             document.getElementById('edit-activity-image').value = activity.image;
             
             editActivityModal.style.display = 'flex';
